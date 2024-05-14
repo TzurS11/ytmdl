@@ -46,19 +46,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import ytdl from "ytdl-core";
 import { StatusCodes } from "http-status-codes";
-import { bufferCache, recentSongID } from "@/app/globals";
+import { userReuqestedSong } from "../../search/[query]/route";
 
-export async function GET(request: Request, context: any) {
-  const id = context.params.id;
-
-  // if (!recentSongID.has(id)) {
-  //   return NextResponse.json(
-  //     { message: "Forbidden" },
-  //     { status: StatusCodes.FORBIDDEN }
-  //   );
-  // }
-
+export async function GET(request: NextRequest, context: any) {
   try {
+    const id = context.params.id;
+    if (
+      userReuqestedSong.has(
+        (request.headers.get("X-Forwarded-For") || "0") + "_" + id
+      ) == false
+    ) {
+      return NextResponse.json(
+        { message: "Forbidden" },
+        { status: StatusCodes.FORBIDDEN }
+      );
+    }
     // Fetch the stream URL for the YouTube audio using ytdl-core
     const streamURL = ytdl(`https://www.youtube.com/watch?v=${id}`, {
       filter: "audioonly",
@@ -75,8 +77,7 @@ export async function GET(request: Request, context: any) {
 
     // Create a new response with the buffer
     const headers = new Headers();
-    headers.set("Content-Type", "audio/mpeg");
-
+    headers.set("Content-Type", "application/json");
     return new Response(buffer, {
       status: 200,
       headers,

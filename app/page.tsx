@@ -72,6 +72,18 @@ export default function Home() {
           </p>
           <p>Download music from youtube</p>
         </div>
+        <div className="flex flex-row gap-4 w-full justify-center">
+          <a
+            title="Star on github"
+            href="https://github.com/TzurS11/ytmdl"
+            target="_blank"
+          >
+            <div className="flex flex-row gap-1 items-center border-white border-[2px] bg-stone-900 p-1 rounded-md hover:bg-stone-800">
+              <img src="/star.svg" alt="" />
+              <p>Star</p>
+            </div>
+          </a>
+        </div>
         <div className="flex items-center flex-col w-[50%] min-w-[300px] gap-y-2">
           <input
             enterKeyHint="search"
@@ -97,19 +109,11 @@ export default function Home() {
               <p>Couldn't find any songs</p>
             </div>
           )}
-          <div className="flex flex-row gap-4 w-full justify-center">
-            <a
-              title="Star on github"
-              href="https://github.com/TzurS11/ytmdl"
-              target="_blank"
-            >
-              <div className="flex flex-row gap-1 items-center border-white border-[2px] bg-stone-900 p-1 rounded-md hover:bg-stone-800">
-                <img src="/star.svg" alt="" />
-                <p>Star</p>
-              </div>
-            </a>
-          </div>
         </div>
+        <p className="text-gray-500 text-sm">
+          No YouTube media or other information is hosted on the website;
+          everything is fetched directly.
+        </p>
       </div>
       <div
         id="popupyoutubeiframe"

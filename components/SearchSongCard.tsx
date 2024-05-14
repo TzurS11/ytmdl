@@ -6,53 +6,6 @@ interface Props {
 }
 
 export default function SearchSongCard({ song }: Props) {
-  async function downloadFile(url: string) {
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.statusText}`);
-      }
-
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error("Failed to get reader from response body");
-      }
-
-      // Create a new Blob for storing downloaded chunks
-      const chunks: Uint8Array[] = [];
-      let receivedLength = 0;
-
-      while (true) {
-        const { done, value } = await reader.read();
-
-        if (done) break;
-
-        chunks.push(value);
-        receivedLength += value?.length || 0;
-
-        // Calculate download progress
-        const contentLength = parseInt(
-          response.headers.get("Content-Length") || "0"
-        );
-        const progress = Math.round((receivedLength / contentLength) * 100);
-        console.log(`Download progress: ${progress}%`);
-
-        // Update UI with download progress, if needed
-      }
-
-      // Combine all chunks into a single Blob
-      const blob = new Blob(chunks);
-
-      // Create a temporary link element and trigger download
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = song.artist.name + " - " + song.name + ".mp3";
-      link.click();
-    } catch (error) {
-      console.error("Error downloading file:", error);
-    }
-  }
-
   var toHHMMSS = (secs: string) => {
     var sec_num = parseInt(secs, 10);
     var hours = Math.floor(sec_num / 3600);
@@ -64,10 +17,6 @@ export default function SearchSongCard({ song }: Props) {
       .filter((v, i) => v !== "00" || i > 0)
       .join(":");
   };
-
-  function download() {
-    downloadFile(`/api/download/${song.videoId}`);
-  }
 
   let duration: undefined | string = undefined;
   if (song.duration) duration = toHHMMSS(song.duration.toString());
