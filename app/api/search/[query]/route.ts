@@ -2,8 +2,7 @@ import YTMusic, { SongDetailed } from "ytmusic-api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import { Context } from "react";
-
-export const userReuqestedSong = new Set<string>();
+import { userReuqestedSong } from "../globals";
 
 const ytmusic = new YTMusic();
 let isInitialized = false;
