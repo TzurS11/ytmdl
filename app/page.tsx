@@ -5,6 +5,7 @@ import { SongDetailed } from "ytmusic-api";
 
 import YouTube, { YouTubeEvent, YouTubeProps } from "react-youtube";
 import { search } from "yt-stream";
+import { isMobile } from "react-device-detect";
 
 // export let player: YouTubeEvent<any> | undefined = undefined;
 
@@ -84,7 +85,11 @@ export default function Home() {
             </div>
           </a>
         </div>
-        <div className="flex items-center flex-col w-[50%] min-w-[300px] gap-y-2">
+        <div
+          className={
+            " flex items-center flex-col min-w-[300px] gap-y-2 w-full lg:w-[50%] px-3"
+          }
+        >
           <input
             enterKeyHint="search"
             onKeyDown={(event) => {
@@ -110,9 +115,14 @@ export default function Home() {
             </div>
           )}
         </div>
-        <p className="text-gray-500 text-sm">
+        <p className="text-gray-500 text-sm text-center">
           No YouTube media or other information is hosted on the website;
           everything is fetched directly.
+        </p>
+        <p className="text-gray-500 text-sm text-center">
+          This website relies on YouTube for sourcing songs, which is not ideal
+          for downloading high-quality versions. It's better to use other
+          services for that purpose.
         </p>
       </div>
       <div
