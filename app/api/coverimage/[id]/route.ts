@@ -6,13 +6,6 @@ import { recentCoverImages } from "@/app/globals";
 export async function GET(request: Request, context: any) {
   const id = decodeURIComponent(context.params.id);
 
-  if (!recentCoverImages.has(id)) {
-    return NextResponse.json(
-      { message: "Forbidden" },
-      { status: StatusCodes.FORBIDDEN }
-    );
-  }
-
   const readableStream = (
     await axios.get(id, {
       responseType: "stream",

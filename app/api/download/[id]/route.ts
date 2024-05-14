@@ -51,32 +51,27 @@ import { bufferCache, recentSongID } from "@/app/globals";
 export async function GET(request: Request, context: any) {
   const id = context.params.id;
 
-  if (!recentSongID.has(id)) {
-    return NextResponse.json(
-      { message: "Forbidden" },
-      { status: StatusCodes.FORBIDDEN }
-    );
-  }
+  // if (!recentSongID.has(id)) {
+  //   return NextResponse.json(
+  //     { message: "Forbidden" },
+  //     { status: StatusCodes.FORBIDDEN }
+  //   );
+  // }
 
   try {
-    let buffer: Buffer | undefined = bufferCache.get(id);
-    if (!buffer) {
-      // Fetch the stream URL for the YouTube audio using ytdl-core
-      const streamURL = ytdl(`https://www.youtube.com/watch?v=${id}`, {
-        filter: "audioonly",
-        quality: "highestaudio",
-        highWaterMark: 1 << 25,
-      });
+    // Fetch the stream URL for the YouTube audio using ytdl-core
+    const streamURL = ytdl(`https://www.youtube.com/watch?v=${id}`, {
+      filter: "audioonly",
+      quality: "highestaudio",
+      highWaterMark: 1 << 25,
+    });
 
-      // Convert the Readable stream to a buffer
-      const chunks: Uint8Array[] = [];
-      for await (const chunk of streamURL) {
-        chunks.push(chunk);
-      }
-      buffer = Buffer.concat(chunks);
-
-      bufferCache.set(id, buffer);
+    // Convert the Readable stream to a buffer
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of streamURL) {
+      chunks.push(chunk);
     }
+    const buffer = Buffer.concat(chunks);
 
     // Create a new response with the buffer
     const headers = new Headers();
