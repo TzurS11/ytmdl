@@ -20,16 +20,16 @@ export async function GET(request: Request, context: any) {
 
   const search = await ytmusic.searchSongs(query);
   // console.log(recentSongID);
-  search.forEach((song) => {
-    userReuqestedSong.add(
-      (request.headers.get("X-Forwarded-For") || "0") + "_" + song.videoId
-    );
-    setTimeout(() => {
-      userReuqestedSong.delete(
-        (request.headers.get("X-Forwarded-For") || "0") + "_" + song.videoId
-      );
-    }, 30 * 1000 * 60);
-  });
+  // search.forEach((song) => {
+  //   userReuqestedSong.add(
+  //     (request.headers.get("X-Forwarded-For") || "0") + "_" + song.videoId
+  //   );
+  //   setTimeout(() => {
+  //     userReuqestedSong.delete(
+  //       (request.headers.get("X-Forwarded-For") || "0") + "_" + song.videoId
+  //     );
+  //   }, 30 * 1000 * 60);
+  // });
   // searchQueryCache.set(query, search);
   return NextResponse.json(search);
 }

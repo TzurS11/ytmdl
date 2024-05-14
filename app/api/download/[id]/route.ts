@@ -51,16 +51,7 @@ import { userReuqestedSong } from "../../search/globals";
 export async function GET(request: NextRequest, context: any) {
   try {
     const id = context.params.id;
-    if (
-      userReuqestedSong.has(
-        (request.headers.get("X-Forwarded-For") || "0") + "_" + id
-      ) == false
-    ) {
-      return NextResponse.json(
-        { message: "Forbidden" },
-        { status: StatusCodes.FORBIDDEN }
-      );
-    }
+
     // Fetch the stream URL for the YouTube audio using ytdl-core
     const streamURL = ytdl(`https://www.youtube.com/watch?v=${id}`, {
       filter: "audioonly",
