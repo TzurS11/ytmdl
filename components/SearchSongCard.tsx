@@ -1,18 +1,11 @@
 "use client";
 import { Mp3Encoder } from "@breezystack/lamejs";
 import { ID3Writer } from "browser-id3-writer";
+import { useState } from "react";
 import { SongDetailed } from "ytmusic-api";
 
 interface Props {
   song: SongDetailed;
-}
-
-function sleep(milliseconds: number) {
-  const date = Date.now();
-  let currentDate = null;
-  do {
-    currentDate = Date.now();
-  } while (currentDate - date < milliseconds);
 }
 
 export default function SearchSongCard({ song }: Props) {
@@ -51,15 +44,10 @@ export default function SearchSongCard({ song }: Props) {
       const response = await fetch(`/api/download/${song.videoId}`);
       const webAData = await response.arrayBuffer();
 
-      sleep(1000);
-
       downloadMenuTitle.innerText = "Decoding";
       downloadMenuDesc.innerText = "Decoding the WebA audio data";
       const audioContext = new window.AudioContext();
       const decodedData = await audioContext.decodeAudioData(webAData);
-
-      sleep(1000);
-
       downloadMenuTitle.innerText = "Extracting";
       downloadMenuDesc.innerText =
         "Extracting the left and right audio channels";
@@ -69,13 +57,9 @@ export default function SearchSongCard({ song }: Props) {
           ? decodedData.getChannelData(1)
           : leftChannel;
 
-      sleep(1000);
-
       downloadMenuTitle.innerText = "Initializing";
       downloadMenuDesc.innerText = "Initializing the MP3 encoder";
-      const mp3Encoder = new Mp3Encoder(2, decodedData.sampleRate, 128);
-
-      sleep(1000);
+      const mp3Encoder = new Mp3Encoder(2, decodedData.sampleRate, 256);
 
       downloadMenuTitle.innerText = "Converting";
       downloadMenuDesc.innerText = "Converting the audio samples to 16-bit PCM";
@@ -99,6 +83,7 @@ export default function SearchSongCard({ song }: Props) {
         if (mp3Buffer.length > 0) {
           mp3Data.push(mp3Buffer);
         }
+        console.log((i / leftSamples.length) * 100);
         downloadProgressPercentage.value = (i / leftSamples.length) * 100;
       }
       downloadProgressPercentage.style.display = "none";
