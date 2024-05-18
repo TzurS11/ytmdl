@@ -1,7 +1,6 @@
 "use client";
 import { Mp3Encoder } from "@breezystack/lamejs";
 import { ID3Writer } from "browser-id3-writer";
-import { useState } from "react";
 import { SongDetailed } from "ytmusic-api";
 
 interface Props {
@@ -64,10 +63,10 @@ export default function SearchSongCard({ song }: Props) {
       downloadMenuTitle.innerText = "Converting";
       downloadMenuDesc.innerText = "Converting the audio samples to 16-bit PCM";
       const leftSamples = new Int16Array(
-        leftChannel.map((sample) => sample * 32767)
+        leftChannel.map((sample) => sample * 16000)
       );
       const rightSamples = new Int16Array(
-        rightChannel.map((sample) => sample * 32767)
+        rightChannel.map((sample) => sample * 16000)
       );
 
       const mp3Data: Uint8Array[] = [];
