@@ -21,13 +21,16 @@ export default function SearchSongCard({ song }: Props) {
   let duration: undefined | string = undefined;
   if (song.duration) duration = toHHMMSS(song.duration.toString());
   return (
-    <div className="items-center min-h-[100px] gap-x-1 flex flex-row bg bg-[#ffffff10] rounded-lg hover:border-white border-[#ffffff00] transition-colors duration-300 border-2 ">
+    <div className="items-center flex-wrap min-h-[100px] gap-x-1 flex flex-row bg bg-[#ffffff10] rounded-lg hover:border-white border-[#ffffff00] transition-colors duration-300 border-2 ">
       <div className="shrink-0 relative w-fit h-fit">
         <img
           className="relative shrink-0 max-w-[100px]  w-full h-full rounded-md"
           src={`/api/coverimage/${encodeURIComponent(
             song.thumbnails[song.thumbnails.length - 1].url
           )}`}
+          onError={(event) => {
+            event.currentTarget.src = "/favicon.ico";
+          }}
           alt=""
           crossOrigin="anonymous"
         />
@@ -53,7 +56,7 @@ export default function SearchSongCard({ song }: Props) {
           />
         </div>
       </div>
-      <div className="flex flex-row  min-h-[100px] w-full justify-between">
+      <div className="flex flex-row  min-h-[100px] w-full justify-between flex-wrap">
         <div className="flex flex-col justify-between gap-y-1">
           <div>
             <p className="font-bold text-xl">{song.name}</p>
@@ -77,7 +80,7 @@ export default function SearchSongCard({ song }: Props) {
         <div className="shrink-0 flex flex-col justify-between items-end gap-y-1">
           <a
             href={`/api/download/${song.videoId}`}
-            download={song.artist.name + " - " + song.name + ".webm"}
+            download={song.artist.name + " - " + song.name + ".mp3"}
           >
             <img
               // onClick={download}
