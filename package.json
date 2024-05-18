@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@breezystack/lamejs": "^1.2.7",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@ffmpeg/ffmpeg": "^0.12.10",
     "@types/fluent-ffmpeg": "^2.1.24",
