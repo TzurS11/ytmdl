@@ -4,8 +4,6 @@ import { KeyboardEvent, MouseEvent, useEffect, useState } from "react";
 import { SongDetailed } from "ytmusic-api";
 
 import YouTube, { YouTubeEvent, YouTubeProps } from "react-youtube";
-import { search } from "yt-stream";
-import { isMobile } from "react-device-detect";
 
 // export let player: YouTubeEvent<any> | undefined = undefined;
 
@@ -140,6 +138,25 @@ export default function Home() {
           className="border-white bg-black border-2 rounded-lg overflow-hidden w-fit h-fit"
           opts={opts}
         ></YouTube>
+      </div>
+      <div
+        id="downloadPopup"
+        style={{ display: "none" }}
+        className=" flex-row justify-center items-center h-screen w-screen fixed top-0 left-0 bg-[#00000094] text-white"
+      >
+        <div className="border-white border-2 rounded-lg p-3 w-[75%] h-[75%] bg-black overflow-hidden flex flex-col justify-center items-center">
+          <p id="downloadPhaseTitle" className="text-4xl"></p>
+          <p id="downloadPhaseDesc" className="text-2xl"></p>
+          <progress
+            id="downloadProgressPercentage"
+            value="0"
+            style={{ display: "none" }}
+            max="100"
+          >
+            {" "}
+            32%{" "}
+          </progress>
+        </div>
       </div>
     </main>
   );
