@@ -64,10 +64,13 @@ export default function Home() {
           <p
             className={
               (searchResults.length > 0 ? "text-7xl" : "text-9xl") +
-              " font-bold transition-all"
+              " font-bold transition-all break-words max-w-100%"
             }
           >
-            <span className="text-red-600 title-red-glow">YT</span>MDL
+            <span className="text-red-600 title-red-glow break-words max-w-100%">
+              YT
+            </span>
+            MDL
           </p>
           <p>Download music from youtube</p>
         </div>
@@ -145,17 +148,27 @@ export default function Home() {
         className=" flex-row justify-center items-center h-screen w-screen fixed top-0 left-0 bg-[#00000094] text-white"
       >
         <div className="border-white border-2 rounded-lg p-3 w-[75%] h-[75%] bg-black overflow-hidden flex flex-col justify-center items-center">
-          <p id="downloadPhaseTitle" className="text-4xl"></p>
-          <p id="downloadPhaseDesc" className="text-2xl"></p>
-          <progress
-            id="downloadProgressPercentage"
-            value="0"
+          <p id="downloadPhaseTitle" className="text-4xl text-center"></p>
+          <p id="downloadPhaseDesc" className="text-2xl text-center"></p>
+          <div
+            id="downloadProgress"
+            className=" flex-row gap-x-2 justify-center items-center text-white w-full md:w-[50%]"
             style={{ display: "none" }}
-            max="100"
           >
-            {" "}
-            32%{" "}
-          </progress>
+            <div className="h-2 rounded-xl w-full bg-neutral-600">
+              <div
+                id="downloadProgressPercentage"
+                className="h-full bg-red-600 div-red-glow rounded-inherit"
+              ></div>
+            </div>
+            {/* <progress
+              id="downloadProgressPercentage"
+              value="0"
+              max="100"
+              className="w-full "
+            /> */}
+            <p className="min-w-[4ch] text-right" id="progressValue"></p>
+          </div>
         </div>
       </div>
     </main>
