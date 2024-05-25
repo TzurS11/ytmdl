@@ -6,9 +6,15 @@ import { SongDetailed } from "ytmusic-api";
 
 interface Props {
   song: SongDetailed;
+  handleAlbum?: () => void;
+  handleArtist?: () => void;
 }
 
-export default function SearchSongCard({ song }: Props) {
+export default function SearchSongCard({
+  song,
+  handleAlbum,
+  handleArtist,
+}: Props) {
   const toHHMMSS = (secs: string) => {
     var sec_num = parseInt(secs, 10);
     var hours = Math.floor(sec_num / 3600);
@@ -164,9 +170,9 @@ export default function SearchSongCard({ song }: Props) {
     <>
       {/* <BrowserView> */}
       <div className="items-center flex-wrap sm:flex-nowrap min-h-[100px] gap-x-1 flex flex-row bg bg-[#ffffff10] rounded-lg hover:border-white border-[#ffffff00] transition-colors duration-300 border-2 ">
-        <div className="shrink-0 relative w-full sm:w-fit h-fit">
+        <div className="shrink-0 relative w-full sm:w-[100px] h-full">
           <img
-            className="relative shrink-0  w-full sm:w-fit h-full rounded-md"
+            className="relative shrink-0 w-fit sm:w-fit h-full rounded-md"
             src={`/api/coverimage/${encodeURIComponent(
               song.thumbnails[song.thumbnails.length - 1].url
             )}`}
@@ -200,16 +206,28 @@ export default function SearchSongCard({ song }: Props) {
           <div className="flex flex-col justify-between gap-y-1">
             <div>
               <p className="font-bold text-xl">{song.name}</p>
-              <p>{song.artist.name}</p>
+              <p
+                onClick={handleArtist}
+                className="cursor-pointer"
+                title="Show top songs by artist"
+              >
+                {song.artist.name}
+              </p>
             </div>
             <div>
               <div className="flex flex-row gap-x-3 flex-wrap sm:flex-nowrap">
-                <div className="flex flex-row gap-x-1 items-center">
-                  <img src="/time.svg" className="w-5" alt="" />
-                  <p className="h-fit">{duration}</p>
-                </div>
-                {song.album && (
+                {duration && (
                   <div className="flex flex-row gap-x-1 items-center">
+                    <img src="/time.svg" className="w-5" alt="" />
+                    <p className="h-fit">{duration}</p>
+                  </div>
+                )}
+                {song.album && (
+                  <div
+                    onClick={handleAlbum}
+                    title="Show all songs in album"
+                    className="flex flex-row gap-x-1 items-center cursor-pointer"
+                  >
                     <img src="/album.svg" className="w-5" alt="" />
                     <p className="h-fit">{song.album.name}</p>
                   </div>

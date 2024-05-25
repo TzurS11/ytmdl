@@ -1,7 +1,13 @@
 "use client";
 import SearchSongCard from "@/components/SearchSongCard";
 import { KeyboardEvent, MouseEvent, useEffect, useState } from "react";
-import YTMusic, { SongDetailed } from "ytmusic-api";
+import YTMusic, {
+  AlbumDetailed,
+  AlbumFull,
+  ArtistBasic,
+  ArtistFull,
+  SongDetailed,
+} from "ytmusic-api";
 
 import YouTube, { YouTubeEvent, YouTubeProps } from "react-youtube";
 import getConfig from "next/config";
@@ -11,6 +17,35 @@ import getConfig from "next/config";
 export default function Home() {
   let [searchResults, setSearchResults] = useState<SongDetailed[]>([]);
   let [resultsEmpty, setResultsEmpty] = useState<boolean>(false);
+  let pressedArtist = "";
+  function handleAlbum(id: string, artist: ArtistBasic) {
+    fetch(`/api/search/album/${id}`)
+      .then((res) => res.json())
+      .then((data: AlbumFull) => {
+        data.songs.forEach((x) => {
+          x.artist = artist;
+        });
+        setSearchResults(data.songs);
+        if (data.songs.length > 0) {
+          setResultsEmpty(false);
+        } else {
+          setResultsEmpty(true);
+        }
+      });
+  }
+
+  function handleArtist(id: string) {
+    fetch(`/api/search/artist/${id}`)
+      .then((res) => res.json())
+      .then((data: ArtistFull) => {
+        setSearchResults(data.topSongs);
+        if (data.topSongs.length > 0) {
+          setResultsEmpty(false);
+        } else {
+          setResultsEmpty(true);
+        }
+      });
+  }
 
   function fetchSearch(query: string) {
     fetch(`/api/search/${query}`)
@@ -120,7 +155,16 @@ export default function Home() {
           {searchResults.length > 0 && (
             <div className="p-3 gap-y-3 flex flex-col overflow-hidden bg-transparent border-white border-2 rounded-lg w-full">
               {searchResults.map((item, index) => (
-                <SearchSongCard key={index} song={item}></SearchSongCard>
+                <SearchSongCard
+                  handleArtist={() => {
+                    handleArtist(item.artist.artistId || "");
+                  }}
+                  handleAlbum={() => {
+                    handleAlbum(item.album?.albumId || "", item.artist);
+                  }}
+                  key={index}
+                  song={item}
+                ></SearchSongCard>
               ))}
             </div>
           )}
@@ -175,12 +219,6 @@ export default function Home() {
                 className="h-full bg-red-600 div-red-glow rounded-inherit"
               ></div>
             </div>
-            {/* <progress
-              id="downloadProgressPercentage"
-              value="0"
-              max="100"
-              className="w-full "
-            /> */}
             <p className="min-w-[4ch] text-right" id="progressValue"></p>
           </div>
         </div>
