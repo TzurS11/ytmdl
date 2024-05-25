@@ -19,6 +19,7 @@
     "audio-decode": "^1.2.5",
     "axios": "^1.6.8",
     "browser-id3-writer": "^6.1.0",
+    "csrf": "^3.1.0",
     "ffmpeg-static": "^5.2.0",
     "fluent-ffmpeg": "^2.1.2",
     "http-status-codes": "^2.3.0",

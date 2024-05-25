@@ -1,15 +1,30 @@
 "use client";
 import SearchSongCard from "@/components/SearchSongCard";
 import { KeyboardEvent, MouseEvent, useEffect, useState } from "react";
-import { SongDetailed } from "ytmusic-api";
+import YTMusic, { SongDetailed } from "ytmusic-api";
 
 import YouTube, { YouTubeEvent, YouTubeProps } from "react-youtube";
+import getConfig from "next/config";
 
 // export let player: YouTubeEvent<any> | undefined = undefined;
 
 export default function Home() {
   let [searchResults, setSearchResults] = useState<SongDetailed[]>([]);
   let [resultsEmpty, setResultsEmpty] = useState<boolean>(false);
+
+  function fetchSearch(query: string) {
+    fetch(`/api/search/${query}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setSearchResults(data);
+        console.log(data);
+        if (data.length > 0) {
+          setResultsEmpty(false);
+        } else {
+          setResultsEmpty(true);
+        }
+      });
+  }
   function handleEnter(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key != "Enter") return;
     const textField = event.target as HTMLInputElement;
@@ -17,16 +32,17 @@ export default function Home() {
       setResultsEmpty(false);
       return;
     }
-    fetch(`/api/search/${textField.value}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setSearchResults(data);
-        if (data.length > 0) {
-          setResultsEmpty(false);
-        } else {
-          setResultsEmpty(true);
-        }
-      });
+    fetchSearch(textField.value);
+  }
+  function handleSearchButton() {
+    const textField = document.getElementById(
+      "searchQueryInput"
+    ) as HTMLInputElement;
+    if (textField.value.trim() == "") {
+      setResultsEmpty(false);
+      return;
+    }
+    fetchSearch(textField.value);
   }
   let opts: YouTubeProps["opts"] = {
     playerVars: {
@@ -88,20 +104,29 @@ export default function Home() {
         </div>
         <div
           className={
-            " flex items-center flex-col min-w-[300px] gap-y-2 w-full lg:w-[50%] px-3"
+            " flex items-center flex-col min-w-[300px] gap-y-2 w-full lg:w-[50%] px-3 "
           }
         >
-          <input
-            enterKeyHint="search"
-            onKeyDown={(event) => {
-              handleEnter(event);
-            }}
-            type="text"
-            name="query-ytmdl"
-            placeholder="Search for a song"
-            className="bg-transparent border-white border-2 rounded-lg p-2 focus:outline-none w-full"
-            spellCheck="false"
-          />
+          <div className={"flex items-center flex-row w-full h-12"}>
+            <input
+              enterKeyHint="search"
+              onKeyDown={(event) => {
+                handleEnter(event);
+              }}
+              id="searchQueryInput"
+              type="text"
+              name="query-ytmdl"
+              placeholder="Search for a song"
+              className="bg-black border-white border-2 border-r-0 rounded-l-lg h-12 focus:outline-none focus:bg-black w-full pl-2"
+              spellCheck="false"
+            />
+            <img
+              src="./search.svg"
+              alt=""
+              onClick={handleSearchButton}
+              className="border-white border-2 border-l-0 rounded-r-lg h-full cursor-pointer"
+            />
+          </div>
 
           {searchResults.length > 0 && (
             <div className="p-3 gap-y-3 flex flex-col overflow-hidden bg-transparent border-white border-2 rounded-lg w-full">

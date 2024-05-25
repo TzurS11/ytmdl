@@ -91,10 +91,13 @@ export default function SearchSongCard({ song }: Props) {
 
       worker.addEventListener("message", async (mes) => {
         if (mes.data[1] != undefined) {
-          downloadProgress.style.display = "flex";
-          progressValue.innerText = (mes.data[1] * 100).toFixed(0) + "%";
-          downloadProgressPercentage.style.width = mes.data[1] * 100 + "%";
-          return;
+          const update = (Math.random() * 200).toFixed(0) == "1";
+          if (update) {
+            downloadProgress.style.display = "flex";
+            progressValue.innerText = (mes.data[1] * 100).toFixed(0) + "%";
+            downloadProgressPercentage.style.width = mes.data[1] * 100 + "%";
+            return;
+          }
         }
         if (mes.data[0] == undefined) return;
         const mp3Data = mes.data[0] as Uint8Array[];
