@@ -17,15 +17,18 @@ import getConfig from "next/config";
 export default function Home() {
   let [searchResults, setSearchResults] = useState<SongDetailed[]>([]);
   let [resultsEmpty, setResultsEmpty] = useState<boolean>(false);
-  let pressedArtist = "";
-  function handleAlbum(id: string, artist: ArtistBasic) {
+  function handleAlbum(id: string | undefined, artist: ArtistBasic) {
+    if (id == null) return;
     fetch(`/api/search/album/${id}`)
       .then((res) => res.json())
       .then((data: AlbumFull) => {
-        data.songs.forEach((x) => {
+        const newData = data.songs.map((x) => {
           x.artist = artist;
+          x.duration = null;
+          return x;
         });
-        setSearchResults(data.songs);
+        console.log(newData);
+        setSearchResults(newData);
         if (data.songs.length > 0) {
           setResultsEmpty(false);
         } else {
@@ -34,7 +37,8 @@ export default function Home() {
       });
   }
 
-  function handleArtist(id: string) {
+  function handleArtist(id: string | null) {
+    if (id == null) return;
     fetch(`/api/search/artist/${id}`)
       .then((res) => res.json())
       .then((data: ArtistFull) => {
@@ -157,12 +161,12 @@ export default function Home() {
               {searchResults.map((item, index) => (
                 <SearchSongCard
                   handleArtist={() => {
-                    handleArtist(item.artist.artistId || "");
+                    handleArtist(item.artist.artistId);
                   }}
                   handleAlbum={() => {
-                    handleAlbum(item.album?.albumId || "", item.artist);
+                    handleAlbum(item.album?.albumId, item.artist);
                   }}
-                  key={index}
+                  key={index + item.videoId}
                   song={item}
                 ></SearchSongCard>
               ))}

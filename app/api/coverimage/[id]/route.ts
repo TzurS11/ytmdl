@@ -18,7 +18,7 @@ export async function GET(request: Request, context: any) {
     );
   }
 
-  const readableStream = await axios.get(id, {
+  const readableStream = await axios.get(id.split("?")[0], {
     responseType: "stream",
   });
   // if()

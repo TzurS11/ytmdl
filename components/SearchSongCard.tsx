@@ -1,6 +1,7 @@
 "use client";
 import { Mp3Encoder } from "@breezystack/lamejs";
 import { ID3Writer } from "browser-id3-writer";
+import { useEffect, useState } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
 import { SongDetailed } from "ytmusic-api";
 
@@ -15,6 +16,10 @@ export default function SearchSongCard({
   handleAlbum,
   handleArtist,
 }: Props) {
+  let fromAlbum = song.duration == null;
+  const album = song.album;
+  const [permSong, setPermSong] = useState<SongDetailed>(song);
+  const [duration, setDuration] = useState<undefined | string>(undefined);
   const toHHMMSS = (secs: string) => {
     var sec_num = parseInt(secs, 10);
     var hours = Math.floor(sec_num / 3600);
@@ -55,7 +60,7 @@ export default function SearchSongCard({
       downloadMenuTitle.innerText = "Fetching";
       downloadMenuDesc.innerText = "Fetching the audio file from the API";
 
-      const response = await fetch(`/api/download/${song.videoId}`);
+      const response = await fetch(`/api/download/${permSong.videoId}`);
       const webAData = await response.arrayBuffer();
 
       downloadMenuTitle.innerText = "Decoding";
@@ -123,7 +128,7 @@ export default function SearchSongCard({
         downloadMenuDesc.innerText = "Fetching cover image of the song";
         const imageResponse = await fetch(
           `/api/coverimage/${encodeURIComponent(
-            song.thumbnails[song.thumbnails.length - 1].url
+            permSong.thumbnails[permSong.thumbnails.length - 1].url
           )}`
         );
         const imageBlob = await imageResponse.blob();
@@ -133,9 +138,9 @@ export default function SearchSongCard({
         downloadMenuDesc.innerText = "Adding tags to the file";
         const writer = new ID3Writer(arrayBuffer);
         writer
-          .setFrame("TIT2", song.name)
-          .setFrame("TPE1", [song.artist.name])
-          .setFrame("TALB", song.album?.name || "");
+          .setFrame("TIT2", permSong.name)
+          .setFrame("TPE1", [permSong.artist.name])
+          .setFrame("TALB", album?.name || "");
         writer.setFrame("APIC", {
           type: 3,
           data: albumArtData,
@@ -151,7 +156,7 @@ export default function SearchSongCard({
           "Creating a download link for the MP3 file";
         const downloadLink = document.createElement("a");
         downloadLink.href = URL.createObjectURL(taggedMp3Blob);
-        downloadLink.download = `${song.artist.name} - ${song.name}.mp3`;
+        downloadLink.download = `${permSong.artist.name} - ${permSong.name}.mp3`;
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
@@ -163,8 +168,25 @@ export default function SearchSongCard({
     }
   };
 
-  let duration: undefined | string = undefined;
-  if (song.duration) duration = toHHMMSS(song.duration.toString());
+  useEffect(() => {
+    fetch(`/api/search/song/${permSong.videoId}`)
+      .then((res) => res.json())
+      .then((data: SongDetailed) => {
+        if (data.duration != null) {
+          setDuration(toHHMMSS(data.duration.toString()));
+        }
+        if (fromAlbum) {
+          data.thumbnails = [
+            {
+              height: 0,
+              width: 0,
+              url: song.thumbnails[song.thumbnails.length - 1].url,
+            },
+          ];
+        }
+        setPermSong(data);
+      });
+  }, []);
 
   return (
     <>
@@ -174,7 +196,7 @@ export default function SearchSongCard({
           <img
             className="relative shrink-0 w-fit sm:w-fit h-full rounded-md"
             src={`/api/coverimage/${encodeURIComponent(
-              song.thumbnails[song.thumbnails.length - 1].url
+              permSong.thumbnails[permSong.thumbnails.length - 1].url
             )}`}
             onError={(event) => {
               event.currentTarget.src = "/favicon.ico";
@@ -187,7 +209,7 @@ export default function SearchSongCard({
               const youtubePlayer = document.getElementById(
                 "youtube-player"
               ) as any;
-              youtubePlayer.src = `https://www.youtube.com/embed/${song.videoId}?autoplay=1&enablejsapi=1`;
+              youtubePlayer.src = `https://www.youtube.com/embed/${permSong.videoId}?autoplay=1&enablejsapi=1`;
               const popup = document.getElementById(
                 "popupyoutubeiframe"
               ) as HTMLElement;
@@ -196,7 +218,7 @@ export default function SearchSongCard({
             className="cursor-pointer rounded-md overflow-hidden flex flex-row justify-center items-center top-0 absolute w-full h-full opacity-0 hover:opacity-100 transition-opacity bg-[#00000075]"
           >
             <img
-              id={`playIMG_${song.videoId}`}
+              id={`playIMG_${permSong.videoId}`}
               src="/play.svg"
               className="w-[55%] h-[55%] playButton"
             />
@@ -205,13 +227,13 @@ export default function SearchSongCard({
         <div className="flex flex-col md:flex-row  min-h-[100px] w-full justify-between flex-wrap sm:flex-nowrap">
           <div className="flex flex-col justify-between gap-y-1">
             <div>
-              <p className="font-bold text-xl">{song.name}</p>
+              <p className="font-bold text-xl">{permSong.name}</p>
               <p
                 onClick={handleArtist}
                 className="cursor-pointer"
                 title="Show top songs by artist"
               >
-                {song.artist.name}
+                {permSong.artist.name}
               </p>
             </div>
             <div>
@@ -222,14 +244,14 @@ export default function SearchSongCard({
                     <p className="h-fit">{duration}</p>
                   </div>
                 )}
-                {song.album && (
+                {album && (
                   <div
                     onClick={handleAlbum}
                     title="Show all songs in album"
                     className="flex flex-row gap-x-1 items-center cursor-pointer"
                   >
                     <img src="/album.svg" className="w-5" alt="" />
-                    <p className="h-fit">{song.album.name}</p>
+                    <p className="h-fit">{album.name}</p>
                   </div>
                 )}
               </div>
@@ -242,18 +264,23 @@ export default function SearchSongCard({
               className="w-[50px] shrink-0 cursor-pointer bg-[#ffffff10] rounded-md"
               alt=""
             />
-            <div
-              title="Copy to clipboard"
+            <a
+              // href={`https://www.youtube.com/watch?v=${permSong.videoId}`}
+              // target="_blank"
+              title="Share song"
               onClick={() => {
-                navigator.clipboard.writeText(
-                  `https://www.youtube.com/watch?v=${song.videoId}`
-                );
+                navigator.share({
+                  url: `https://www.youtube.com/watch?v=${permSong.videoId}`,
+                });
+                // navigator.clipboard.writeText(
+                //   `https://www.youtube.com/watch?v=${permSong.videoId}`
+                // );
               }}
               className="cursor-pointer h-fit flex flex-row gap-1 bg-[#ffffff10] p-[2px] rounded-md"
             >
               <img src="/share.svg" className="w-5" alt="" />
-              <p className="h-fit">{song.videoId}</p>
-            </div>
+              <p className="h-fit">{permSong.videoId}</p>
+            </a>
           </div>
         </div>
       </div>
@@ -264,7 +291,7 @@ export default function SearchSongCard({
             <img
               className="relative shrink-0 max-w-full w-full h-full rounded-md"
               src={`/api/coverimage/${encodeURIComponent(
-                song.thumbnails[song.thumbnails.length - 1].url
+                permSong.thumbnails[permSong.thumbnails.length - 1].url
               )}`}
               onError={(event) => {
                 event.currentTarget.src = "/favicon.ico";
@@ -277,7 +304,7 @@ export default function SearchSongCard({
                 const youtubePlayer = document.getElementById(
                   "youtube-player"
                 ) as any;
-                youtubePlayer.src = `https://www.youtube.com/embed/${song.videoId}?autoplay=1&enablejsapi=1`;
+                youtubePlayer.src = `https://www.youtube.com/embed/${permSong.videoId}?autoplay=1&enablejsapi=1`;
                 const popup = document.getElementById(
                   "popupyoutubeiframe"
                 ) as HTMLElement;
@@ -286,7 +313,7 @@ export default function SearchSongCard({
               className="cursor-pointer rounded-md overflow-hidden flex flex-row justify-center items-center top-0 absolute w-full h-full opacity-0 hover:opacity-100 transition-opacity bg-[#00000075]"
             >
               <img
-                id={`playIMG_${song.videoId}`}
+                id={`playIMG_${permSong.videoId}`}
                 src="/play.svg"
                 className="w-[55%] h-[55%] playButton"
               />
@@ -295,8 +322,8 @@ export default function SearchSongCard({
           <div className="flex flex-col min-h-[100px] w-full justify-between flex-wrap sm:flex-nowrap">
             <div className="flex flex-col justify-between gap-y-1">
               <div>
-                <p className="font-bold text-xl">{song.name}</p>
-                <p>{song.artist.name}</p>
+                <p className="font-bold text-xl">{permSong.name}</p>
+                <p>{permSong.artist.name}</p>
               </div>
               <div>
                 <div className="flex flex-row gap-x-3 flex-wrap sm:flex-nowrap">
@@ -304,10 +331,10 @@ export default function SearchSongCard({
                     <img src="/time.svg" className="w-5" alt="" />
                     <p className="h-fit">{duration}</p>
                   </div>
-                  {song.album && (
+                  {album && (
                     <div className="flex flex-row gap-x-1 items-center">
                       <img src="/album.svg" className="w-5" alt="" />
-                      <p className="h-fit">{song.album.name}</p>
+                      <p className="h-fit">{album.name}</p>
                     </div>
                   )}
                 </div>
@@ -324,13 +351,13 @@ export default function SearchSongCard({
                 title="Copy to clipboard"
                 onClick={() => {
                   navigator.clipboard.writeText(
-                    `https://www.youtube.com/watch?v=${song.videoId}`
+                    `https://www.youtube.com/watch?v=${permSong.videoId}`
                   );
                 }}
                 className="cursor-pointer h-fit flex flex-row gap-1 bg-[#ffffff10] p-[2px] rounded-md"
               >
                 <img src="/share.svg" className="w-5" alt="" />
-                <p className="h-fit">{song.videoId}</p>
+                <p className="h-fit">{permSong.videoId}</p>
               </div>
             </div>
           </div>

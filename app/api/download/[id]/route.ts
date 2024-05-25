@@ -48,9 +48,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import ytdl from "ytdl-core";
-import { StatusCodes } from "http-status-codes";
-import { userReuqestedSong } from "../../search/globals";
-import { FFmpeg } from "@ffmpeg/ffmpeg";
 
 export async function GET(request: NextRequest, context: any) {
   try {
