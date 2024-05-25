@@ -79,8 +79,7 @@ export default function Home() {
         <div className=" flex flex-col items-center">
           <p
             className={
-              (searchResults.length > 0 ? "text-7xl" : "text-9xl") +
-              " font-bold transition-all break-words max-w-100%"
+              "text-[20vw] md:text-[10vw] font-bold transition-all break-words max-w-100%"
             }
           >
             <span className="text-red-600 title-red-glow break-words max-w-100%">
@@ -88,19 +87,9 @@ export default function Home() {
             </span>
             MDL
           </p>
-          <p>Download music from youtube</p>
-        </div>
-        <div className="flex flex-row gap-4 w-full justify-center">
-          <a
-            title="Star on github"
-            href="https://github.com/TzurS11/ytmdl"
-            target="_blank"
-          >
-            <div className="flex flex-row gap-1 items-center border-white border-[2px] bg-stone-900 p-1 rounded-md hover:bg-stone-800">
-              <img src="/star.svg" alt="" />
-              <p>Star</p>
-            </div>
-          </a>
+          <p className="text-center text-[5vw] md:text-[2vw]">
+            Download music from youtube
+          </p>
         </div>
         <div
           className={
@@ -195,6 +184,38 @@ export default function Home() {
             <p className="min-w-[4ch] text-right" id="progressValue"></p>
           </div>
         </div>
+      </div>
+      <div className="text-nowrap mt-3 flex flex-row gap-3 flex-wrap justify-center ">
+        <a
+          title="Star on Github"
+          href="https://github.com/TzurS11/ytmdl"
+          target="_blank"
+        >
+          <div className="flex text-white flex-row gap-1 items-center border-white border-[2px] bg-black p-1 rounded-md">
+            <img src="/star.svg" alt="" />
+            <p>Star</p>
+          </div>
+        </a>
+        <a title="Go to Vercel" href="https://vercel.com" target="_blank">
+          <div className="flex text-white flex-row gap-1 items-center border-white border-[2px] bg-black p-1 rounded-md">
+            <svg
+              aria-label="Vercel logomark"
+              height="22"
+              role="img"
+              className=""
+              viewBox="0 0 74 64"
+              style={{ width: "auto", overflow: "visible" }}
+            >
+              <path
+                d="M37.5896 0.25L74.5396 64.25H0.639648L37.5896 0.25Z"
+                fill="white"
+              ></path>
+            </svg>
+            <p className="font-extralight">
+              Powered by <span className="font-normal">Vercel</span>
+            </p>
+          </div>
+        </a>
       </div>
     </main>
   );
