@@ -2,9 +2,9 @@
 import { Mp3Encoder } from "@breezystack/lamejs";
 import { ID3Writer } from "browser-id3-writer";
 import { useEffect, useState } from "react";
+import { iso6392 } from "iso-639-2";
 import { BrowserView, MobileView } from "react-device-detect";
-import { SongDetailed } from "ytmusic-api";
-
+import YTMusic, { SongDetailed } from "ytmusic-api";
 interface Props {
   song: SongDetailed;
   handleAlbum?: () => void;
@@ -147,6 +147,25 @@ export default function SearchSongCard({
           description: "Cover",
           useUnicodeEncoding: false,
         });
+        type lyricsFetch = {
+          lyrics: string[];
+          id: string;
+          language: string;
+        };
+        const lyrics = await fetch(`/api/lyrics/${permSong.videoId}`)
+          .then((res) => res.json())
+          .then((lyrics: lyricsFetch) => {
+            return lyrics;
+          });
+        if (lyrics.lyrics.length > 0) {
+          console.log(lyrics.language);
+          writer.setFrame("USLT", {
+            description: "",
+            lyrics: lyrics.lyrics.toString(),
+            language: lyrics.language,
+          });
+        }
+
         writer.addTag();
 
         const taggedMp3Blob = writer.getBlob();

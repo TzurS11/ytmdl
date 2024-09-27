@@ -12,6 +12,6 @@ export async function GET(request: Request, context: any) {
       isInitialized = true;
     });
 
-  const artist = await ytmusic.getSong(id);
-  return NextResponse.json(artist);
+  const song = await ytmusic.getSong(id);
+  return NextResponse.json(song);
 }

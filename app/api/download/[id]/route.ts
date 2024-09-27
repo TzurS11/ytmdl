@@ -1,5 +1,5 @@
+import ytdl from "@distube/ytdl-core";
 import { NextRequest, NextResponse } from "next/server";
-import ytdl from "ytdl-core";
 
 export async function GET(request: NextRequest, context: any) {
   try {
@@ -52,9 +52,8 @@ export async function GET(request: NextRequest, context: any) {
         }
       );
     }
-
     // Fetch the audio stream for the specified range
-    const stream = ytdl(url, {
+    const stream = ytdl.downloadFromInfo(info, {
       filter: "audioonly",
       quality: "highestaudio",
       range: { start, end },
